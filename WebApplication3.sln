@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36518.9
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication3", "WebApplication3\WebApplication3.csproj", "{F44AC182-9F87-4512-ABAC-8DA9B47C8355}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitBuddy.Tests", "FitBuddy.Tests\FitBuddy.Tests.csproj", "{6CAD55FD-56C7-48A6-A41C-C42065CBB3C6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F44AC182-9F87-4512-ABAC-8DA9B47C8355}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F44AC182-9F87-4512-ABAC-8DA9B47C8355}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F44AC182-9F87-4512-ABAC-8DA9B47C8355}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F44AC182-9F87-4512-ABAC-8DA9B47C8355}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CAD55FD-56C7-48A6-A41C-C42065CBB3C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CAD55FD-56C7-48A6-A41C-C42065CBB3C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CAD55FD-56C7-48A6-A41C-C42065CBB3C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CAD55FD-56C7-48A6-A41C-C42065CBB3C6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {628080CA-7D67-4B97-8E0F-A01E42DAF46F}
+	EndGlobalSection
+EndGlobal
