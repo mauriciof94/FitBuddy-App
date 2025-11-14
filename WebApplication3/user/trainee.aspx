@@ -79,6 +79,30 @@
                             <asp:Button ID="btnVerRutinasCompartidas" runat="server" CssClass="btn-secondary" Text="Ver Rutinas Compartidas" OnClick="btnVerRutinasCompartidas_Click" />
                         </div>
                     </div>
+                    <!-- CHAT CON ENTRENADOR -->
+                    <!-- CHAT CON ENTRENADORES -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <i class='bx bx-chat'></i>
+                            <h3>Chat con Entrenadores</h3>
+                        </div>
+
+                        <asp:Repeater ID="rptTrainersChat" runat="server">
+                            <ItemTemplate>
+                                <div class="user-item">
+                                    <div class="user-avatar-small" style="background: var(--gradient);"><%# Eval("Iniciales") %></div>
+                                    <div class="user-item-info">
+                                        <h4><%# Eval("Nombre") %> (ID: <%# Eval("IdTrainer") %>)</h4>
+                                        <p><%# Eval("Email") %></p>
+                                    </div>
+                                    <asp:Button ID="btnChatTrainer" runat="server" CssClass="btn-secondary"
+                                        Text="Abrir Chat"
+                                        CommandArgument='<%# Eval("IdTrainer") %>'
+                                        OnCommand="AbrirChatTrainer_Command" />
+                                </div>
+                            </ItemTemplate>
+                        </asp:Repeater>
+                    </div>
 
                     <!-- MIS RUTINAS ACTIVAS -->
                     <div class="dashboard-card">

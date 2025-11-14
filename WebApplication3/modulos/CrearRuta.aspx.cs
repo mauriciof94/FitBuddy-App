@@ -23,7 +23,10 @@ namespace WebApplication3.modulos
                 Compartida = chkCompartida.Checked
             };
 
-            if (dao.CrearRuta(nueva))
+            // CrearRuta devuelve un int → el ID generado
+            int idGenerado = dao.CrearRuta(nueva);
+
+            if (idGenerado > 0)
             {
                 string script = "alert('✅ Ruta creada correctamente.'); window.location='../user/trainer.aspx';";
                 ClientScript.RegisterStartupScript(this.GetType(), "alert", script, true);

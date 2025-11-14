@@ -69,22 +69,13 @@ namespace WebApplication3.user
         protected global::System.Web.UI.WebControls.Label lblRutinasCreadas;
 
         /// <summary>
-        /// Control rptClientes.
+        /// Control rptTraineesChat.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptClientes;
-
-        /// <summary>
-        /// Control btnGestionarClientes.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnGestionarClientes;
+        protected global::System.Web.UI.WebControls.Repeater rptTraineesChat;
 
         /// <summary>
         /// Control rptAgenda.

@@ -11,11 +11,13 @@ namespace WebApplication3.Clases
     {
         private string connectionString = ConfigurationManager.ConnectionStrings["MiConexion"].ConnectionString;
 
-        public bool CrearRuta(Ruta r)
+        // ✅ Crear Ruta (devuelve el ID generado)
+        public int CrearRuta(Ruta r)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 string query = @"INSERT INTO Ruta (nombre, descripcion, puntos, id_trainer, compartida)
+                                 OUTPUT INSERTED.id_ruta
                                  VALUES (@nombre, @descripcion, @puntos, @idTrainer, @compartida)";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@nombre", r.Nombre);
@@ -25,15 +27,18 @@ namespace WebApplication3.Clases
                 cmd.Parameters.AddWithValue("@compartida", r.Compartida);
 
                 conn.Open();
-                return cmd.ExecuteNonQuery() > 0;
+                int idGenerado = Convert.ToInt32(cmd.ExecuteScalar());
+                return idGenerado;
             }
         }
 
+        // ✅ Editar Ruta
         public bool EditarRuta(Ruta r)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                string query = @"UPDATE Ruta SET nombre=@nombre, descripcion=@descripcion, puntos=@puntos, compartida=@compartida 
+                string query = @"UPDATE Ruta 
+                                 SET nombre=@nombre, descripcion=@descripcion, puntos=@puntos, compartida=@compartida 
                                  WHERE id_ruta=@idRuta AND id_trainer=@idTrainer";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@nombre", r.Nombre);
@@ -48,6 +53,7 @@ namespace WebApplication3.Clases
             }
         }
 
+        // ✅ Eliminar Ruta
         public bool EliminarRuta(int idRuta, int idTrainer)
         {
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -62,6 +68,7 @@ namespace WebApplication3.Clases
             }
         }
 
+        // Obtener todas las rutas de un trainer
         public List<Ruta> ObtenerRutasPorTrainer(int idTrainer)
         {
             var lista = new List<Ruta>();
@@ -90,6 +97,7 @@ namespace WebApplication3.Clases
             return lista;
         }
 
+        // Obtener rutas compartidas
         public List<Ruta> ObtenerRutasCompartidas()
         {
             var lista = new List<Ruta>();

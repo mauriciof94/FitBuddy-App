@@ -65,29 +65,28 @@
                 <!-- Dashboard Grid -->
                 <div class="dashboard-grid">
 
-                    <!-- Mis Clientes -->
+                    <!-- 🔹 CHATS CON TRAINEES -->
                     <div class="dashboard-card">
                         <div class="card-header">
-                            <i class='bx bx-group'></i>
-                            <h3>Mis Clientes</h3>
+                            <i class='bx bx-chat'></i>
+                            <h3>Chats con Trainees</h3>
                         </div>
-                        <div class="user-list">
-                            <asp:Repeater ID="rptClientes" runat="server">
-                                <ItemTemplate>
-                                    <div class="user-item">
-                                        <div class="user-avatar-small" style="background: var(--gradient);"><%# Eval("Iniciales") %></div>
-                                        <div class="user-item-info">
-                                            <h4><%# Eval("Nombre") %></h4>
-                                            <p><%# Eval("Progreso") %></p>
-                                        </div>
-                                        <span class="user-status status-online"><%# Eval("Estado") %></span>
+
+                        <asp:Repeater ID="rptTraineesChat" runat="server">
+                            <ItemTemplate>
+                                <div class="user-item">
+                                    <div class="user-avatar-small" style="background: var(--gradient);"><%# Eval("Iniciales") %></div>
+                                    <div class="user-item-info">
+                                        <h4><%# Eval("Nombre") %> (ID: <%# Eval("IdTrainee") %>)</h4>
+                                        <p><%# Eval("Email") %></p>
                                     </div>
-                                </ItemTemplate>
-                            </asp:Repeater>
-                        </div>
-                        <div class="action-buttons">
-                            <asp:Button ID="btnGestionarClientes" runat="server" CssClass="btn-primary" Text="Gestionar Clientes" />
-                        </div>
+                                    <asp:Button ID="btnChatTrainee" runat="server" CssClass="btn-secondary" 
+                                        Text="Abrir Chat"
+                                        CommandArgument='<%# Eval("IdTrainee") %>'
+                                        OnCommand="AbrirChatTrainee_Command" />
+                                </div>
+                            </ItemTemplate>
+                        </asp:Repeater>
                     </div>
 
                     <!-- Agenda -->
@@ -139,7 +138,7 @@
                     </div>
 
                     <!-- Rutas Creadas -->
-                    <div class="dashboard-card" data-aos="fade-right">
+                    <div class="dashboard-card">
                         <div class="card-header">
                             <i class='bx bx-map'></i>
                             <h3>Mis Rutas</h3>

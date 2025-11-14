@@ -11,18 +11,44 @@ namespace WebApplication3.Clases
     {
         private string connectionString = ConfigurationManager.ConnectionStrings["MiConexion"].ConnectionString;
 
-        public bool RegistrarTrainee(string nombreUsuario, string contrasena)
+        public int? ValidarTrainee(string usuario, string contrasena)
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            using (SqlConnection con = new SqlConnection(connectionString))
             {
-                string query = "INSERT INTO TRAINEE (nombre_usuario, contrasena) VALUES (@usuario, @pass)";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@usuario", nombreUsuario);
-                cmd.Parameters.AddWithValue("@pass", contrasena);
+                string query = "SELECT id_trainee FROM TRAINEE WHERE nombre_usuario = @usuario AND contrasena = @contrasena";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@usuario", usuario);
+                cmd.Parameters.AddWithValue("@contrasena", contrasena);
+                con.Open();
+                var result = cmd.ExecuteScalar();
+                return result != null && result != DBNull.Value ? (int?)Convert.ToInt32(result) : null;
+            }
+        }
 
-                conn.Open();
-                int filas = cmd.ExecuteNonQuery();
-                return filas > 0;
+        public int? ValidarTrainer(string usuario, string contrasena)
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                string query = "SELECT id_trainer FROM TRAINER WHERE nombre_usuario = @usuario AND contrasena = @contrasena AND estado = 'Aprobado'";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@usuario", usuario);
+                cmd.Parameters.AddWithValue("@contrasena", contrasena);
+                con.Open();
+                var result = cmd.ExecuteScalar();
+                return result != null && result != DBNull.Value ? (int?)Convert.ToInt32(result) : null;
+            }
+        }
+
+        public bool ValidarAdmin(string usuario, string contrasena)
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                string query = "SELECT COUNT(*) FROM ADMIN WHERE Usuario = @usuario AND contrasena = @contrasena";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@usuario", usuario);
+                cmd.Parameters.AddWithValue("@contrasena", contrasena);
+                con.Open();
+                return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
             }
         }
     }

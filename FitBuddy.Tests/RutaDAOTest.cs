@@ -5,74 +5,98 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebApplication3.Clases;
+using System.Transactions;
 
 namespace FitBuddy.Tests
 {
     [TestClass]
     public class RutaDAOTest
     {
-        private RutaDAO rutaDAO;
+        private RutaDAO dao;
 
         [TestInitialize]
         public void Inicializar()
         {
-            // Inicializa el DAO antes de cada test
-            rutaDAO = new RutaDAO();
+            dao = new RutaDAO();
         }
 
         [TestMethod]
         public void CrearRuta_DeberiaGuardarRutaCorrectamente()
         {
-            // Arrange
-            var nuevaRuta = new Ruta
+            using (var scope = new TransactionScope())
             {
-                Nombre = "Ruta Test",
-                Descripcion = "Ruta de prueba unitaria",
-                Puntos = "[-34.6037, -58.3816];[-34.6090, -58.3830]", // Ejemplo de coordenadas
-                IdTrainer = 1, // Debe existir un Trainer con este ID
-                Compartida = true
-            };
+                // Arrange
+                Ruta nueva = new Ruta
+                {
+                    Nombre = "Ruta de Prueba",
+                    Descripcion = "Ruta para test de creación",
+                    Puntos = "[]",
+                    IdTrainer = 1,
+                    Compartida = false
+                };
 
-            // Act
-            bool resultado = rutaDAO.CrearRuta(nuevaRuta);
+                // Act
+                int idGenerado = dao.CrearRuta(nueva);
 
-            // Assert
-            Assert.IsTrue(resultado, "La ruta no se pudo crear correctamente en la base de datos.");
+                // Assert
+                Assert.IsTrue(idGenerado > 0, "La ruta no se creó correctamente en la base de datos.");
+            }
         }
 
         [TestMethod]
         public void EditarRuta_DeberiaActualizarRutaCorrectamente()
         {
-            // Arrange
-            var rutaExistente = new Ruta
+            using (var scope = new TransactionScope())
             {
-                Id = 1, 
-                Nombre = "Ruta Editada",
-                Descripcion = "Descripción modificada por prueba unitaria",
-                Puntos = "[-34.6037, -58.3816];[-34.6090, -58.3830]",
-                IdTrainer = 1,
-                Compartida = false
-            };
+                // Arrange
+                Ruta nueva = new Ruta
+                {
+                    Nombre = "Ruta Original",
+                    Descripcion = "Antes de editar",
+                    Puntos = "[]",
+                    IdTrainer = 1,
+                    Compartida = false
+                };
 
-            // Act
-            bool resultado = rutaDAO.EditarRuta(rutaExistente);
+                int idGenerado = dao.CrearRuta(nueva);
+                nueva.Id = idGenerado;
 
-            // Assert
-            Assert.IsTrue(resultado, "La ruta no se actualizó correctamente en la base de datos.");
+                // Modificar datos
+                nueva.Nombre = "Ruta Editada";
+                nueva.Descripcion = "Descripción actualizada";
+
+                // Act
+                bool resultado = dao.EditarRuta(nueva);
+
+                // Assert
+                Assert.IsTrue(resultado, "La ruta no se actualizó correctamente en la base de datos.");
+            }
         }
 
         [TestMethod]
         public void EliminarRuta_DeberiaEliminarRutaCorrectamente()
         {
-            // Arrange
-            int idRutaAEliminar = 2; 
-            int idTrainer = 1;
+            using (var scope = new TransactionScope())
+            {
+                // Arrange
+                Ruta nueva = new Ruta
+                {
+                    Nombre = "Ruta Temporal",
+                    Descripcion = "Ruta de prueba para eliminar",
+                    Puntos = "[]",
+                    IdTrainer = 1,
+                    Compartida = false
+                };
 
-            // Act
-            bool resultado = rutaDAO.EliminarRuta(idRutaAEliminar, idTrainer);
+                int idGenerado = dao.CrearRuta(nueva);
+                nueva.Id = idGenerado;
 
-            // Assert
-            Assert.IsTrue(resultado, "La ruta no se eliminó correctamente de la base de datos.");
+                // Act
+                bool resultado = dao.EliminarRuta(nueva.Id, nueva.IdTrainer);
+
+                // Assert
+                Assert.IsTrue(resultado, "La ruta no se eliminó correctamente de la base de datos.");
+            }
         }
     }
 }

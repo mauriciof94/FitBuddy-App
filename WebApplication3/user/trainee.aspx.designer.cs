@@ -87,6 +87,15 @@ namespace WebApplication3.user
         protected global::System.Web.UI.WebControls.Button btnVerRutinasCompartidas;
 
         /// <summary>
+        /// Control rptTrainersChat.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater rptTrainersChat;
+
+        /// <summary>
         /// Control rptRutinas.
         /// </summary>
         /// <remarks>

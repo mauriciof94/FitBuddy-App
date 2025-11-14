@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -18,6 +20,7 @@ namespace WebApplication3.user
             if (!IsPostBack)
             {
                 // 🔒 Verificar sesión activa
+
                 if (Session["Usuario"] == null || Session["Rol"]?.ToString() != "Entrenador" || Session["idTrainer"] == null)
                 {
                     Response.Redirect("../auth/login.aspx");
@@ -26,21 +29,12 @@ namespace WebApplication3.user
 
                 lblNombreTrainer.Text = Session["Usuario"].ToString();
                 CargarPanel();
+                CargarTraineesChat();
             }
         }
 
         private void CargarPanel()
         {
-            // === CLIENTES SIMULADOS ===
-            var clientes = new List<dynamic>
-            {
-                new { Iniciales = "LM", Nombre = "Laura Méndez", Progreso = "En progreso", Estado = "Activa" },
-                new { Iniciales = "DR", Nombre = "Diego Ramírez", Progreso = "Avanzado", Estado = "Activa" },
-                new { Iniciales = "AG", Nombre = "Ana Gómez", Progreso = "Principiante", Estado = "Activa" }
-            };
-            rptClientes.DataSource = clientes;
-            rptClientes.DataBind();
-
             // === AGENDA SIMULADA ===
             var agenda = new List<dynamic>
             {
@@ -60,10 +54,10 @@ namespace WebApplication3.user
             lblNuevosClientes.Text = "5 este mes";
             lblSesionesCompletadas.Text = "42 sesiones";
 
-            // === RUTINAS REALES DEL ENTRENADOR ===
             int idTrainer = Convert.ToInt32(Session["idTrainer"]);
-            var rutinas = rutinaDAO.ObtenerRutinasPorTrainer(idTrainer);
 
+            // === RUTINAS REALES ===
+            var rutinas = rutinaDAO.ObtenerRutinasPorTrainer(idTrainer);
             if (rutinas.Count > 0)
             {
                 var data = rutinas.Select(r => new
@@ -73,19 +67,17 @@ namespace WebApplication3.user
                     Detalle = $"{r.Nivel} - {r.DuracionMinutos} min",
                     Estado = "Activa"
                 }).ToList();
-
                 rptRutinas.DataSource = data;
-                rptRutinas.DataBind();
             }
             else
             {
                 rptRutinas.DataSource = new[] {
                     new { Iniciales = "--", Nombre = "Sin rutinas", Detalle = "Cree su primera rutina", Estado = "" }
                 };
-                rptRutinas.DataBind();
             }
+            rptRutinas.DataBind();
 
-            // === RUTAS REALES DEL ENTRENADOR ===
+            // === RUTAS REALES ===
             var rutas = rutaDAO.ObtenerRutasPorTrainer(idTrainer);
             if (rutas.Count > 0)
             {
@@ -96,39 +88,56 @@ namespace WebApplication3.user
                     Descripcion = r.Descripcion,
                     Estado = r.Compartida ? "Compartida" : "Privada"
                 }).ToList();
-
                 rptRutas.DataSource = dataRutas;
-                rptRutas.DataBind();
             }
             else
             {
                 rptRutas.DataSource = new[] {
                     new { Iniciales = "--", Nombre = "Sin rutas", Descripcion = "Cree su primera ruta", Estado = "" }
                 };
-                rptRutas.DataBind();
             }
+            rptRutas.DataBind();
         }
 
-        // === BOTONES DEL PANEL ===
-
-        protected void btnCrearRutina_Click(object sender, EventArgs e)
+        private void CargarTraineesChat()
         {
-            Response.Redirect("../modulos/CrearRutina.aspx");
+            string connectionString = ConfigurationManager.ConnectionStrings["MiConexion"].ConnectionString;
+            var trainees = new List<dynamic>();
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                string query = "SELECT id_trainee, nombre_usuario, email FROM TRAINEE";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                conn.Open();
+                SqlDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    trainees.Add(new
+                    {
+                        IdTrainee = Convert.ToInt32(dr["id_trainee"]),
+                        Nombre = dr["nombre_usuario"].ToString(),
+                        Email = dr["email"].ToString(),
+                        Iniciales = dr["nombre_usuario"].ToString().Length >= 2
+                            ? dr["nombre_usuario"].ToString().Substring(0, 2).ToUpper()
+                            : "TR"
+                    });
+                }
+            }
+
+            rptTraineesChat.DataSource = trainees;
+            rptTraineesChat.DataBind();
         }
 
-        protected void btnEditarRutinas_Click(object sender, EventArgs e)
+        protected void AbrirChatTrainee_Command(object sender, CommandEventArgs e)
         {
-            Response.Redirect("../modulos/Rutinas.aspx");
+            int idTrainee = Convert.ToInt32(e.CommandArgument);
+            Response.Redirect($"../modulos/Chat.aspx?idDestino={idTrainee}&tipoDestino=Trainee");
         }
 
-        protected void btnCrearRuta_Click(object sender, EventArgs e)
-        {
-            Response.Redirect("../modulos/CrearRuta.aspx");
-        }
-
-        protected void btnGestionarRutas_Click(object sender, EventArgs e)
-        {
-            Response.Redirect("../modulos/ListarRutas.aspx");
-        }
+        // === BOTONES ===
+        protected void btnCrearRutina_Click(object sender, EventArgs e) => Response.Redirect("../modulos/CrearRutina.aspx");
+        protected void btnEditarRutinas_Click(object sender, EventArgs e) => Response.Redirect("../modulos/Rutinas.aspx");
+        protected void btnCrearRuta_Click(object sender, EventArgs e) => Response.Redirect("../modulos/CrearRuta.aspx");
+        protected void btnGestionarRutas_Click(object sender, EventArgs e) => Response.Redirect("../modulos/ListarRutas.aspx");
     }
 }

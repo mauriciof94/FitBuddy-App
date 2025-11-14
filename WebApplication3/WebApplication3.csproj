@@ -67,7 +67,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="auth\auth.js" />
     <Content Include="auth\login.aspx" />
     <Content Include="auth\register.aspx" />
     <Content Include="css\auth.css" />
@@ -75,6 +74,7 @@
     <Content Include="css\users.css" />
     <Content Include="main\index.html" />
     <Content Include="main\sript.js" />
+    <Content Include="modulos\Chat.aspx" />
     <Content Include="modulos\CrearRuta.aspx" />
     <Content Include="modulos\CrearRutina.aspx" />
     <Content Include="modulos\EditarRuta.aspx" />
@@ -84,12 +84,8 @@
     <Content Include="modulos\Rutinas.aspx" />
     <Content Include="modulos\RutinasCompartidas.aspx" />
     <Content Include="user\admin.aspx" />
-    <Content Include="user\admin.js" />
     <Content Include="user\trainee.aspx" />
-    <Content Include="user\trainee.js" />
     <Content Include="user\trainer.aspx" />
-    <Content Include="user\trainer.js" />
-    <Content Include="user\users.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -107,13 +103,24 @@
     <Compile Include="auth\register.aspx.designer.cs">
       <DependentUpon>register.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Clases\Mensaje.cs" />
+    <Compile Include="Clases\MensajeDAO.cs" />
     <Compile Include="Clases\RegistroService.cs" />
+    <Compile Include="Clases\ResultadoLogin.cs" />
     <Compile Include="Clases\Ruta.cs" />
     <Compile Include="Clases\RutaDAO.cs" />
     <Compile Include="Clases\Rutina.cs" />
     <Compile Include="Clases\RutinaDAO.cs" />
+    <Compile Include="Clases\SesionHelper.cs" />
     <Compile Include="Clases\TrainerDAO.cs" />
     <Compile Include="Clases\UsuarioDAO.cs" />
+    <Compile Include="modulos\Chat.aspx.cs">
+      <DependentUpon>Chat.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="modulos\Chat.aspx.designer.cs">
+      <DependentUpon>Chat.aspx</DependentUpon>
+    </Compile>
     <Compile Include="modulos\CrearRuta.aspx.cs">
       <DependentUpon>CrearRuta.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

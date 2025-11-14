@@ -6,14 +6,16 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using WebApplication3.Clases;
+using WebApplication3.Utils;
 
 namespace WebApplication3.auth
 {
     public partial class login : System.Web.UI.Page
     {
-        protected void Page_Load(object sender, EventArgs e)
-        {
-        }
+        private readonly UsuarioDAO usuarioDAO = new UsuarioDAO();
+
+        protected void Page_Load(object sender, EventArgs e) { }
 
         protected void btnIngresar_Click(object sender, EventArgs e)
         {
@@ -23,107 +25,83 @@ namespace WebApplication3.auth
 
             if (string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(contrasena) || string.IsNullOrEmpty(rol))
             {
-                lblMensaje.Text = "⚠️ Por favor completa todos los campos.";
-                lblMensaje.ForeColor = System.Drawing.Color.Red;
+                MostrarError("⚠️ Por favor completa todos los campos.");
                 return;
             }
 
             try
             {
-                string connectionString = ConfigurationManager.ConnectionStrings["MiConexion"].ConnectionString;
+                ResultadoLogin resultado = ValidarCredenciales(usuario, contrasena, rol);
 
-                using (SqlConnection con = new SqlConnection(connectionString))
+                if (resultado.Exitoso)
                 {
-                    con.Open();
-                    string query = "";
-
-                    if (rol == "Trainee")
-                    {
-                        query = "SELECT id_trainee FROM TRAINEE WHERE nombre_usuario = @usuario AND contrasena = @contrasena";
-                    }
-                    else if (rol == "Entrenador")
-                    {
-                        query = "SELECT id_trainer FROM TRAINER WHERE nombre_usuario = @usuario AND contrasena = @contrasena AND estado = 'Aprobado'";
-                    }
-                    else if (rol == "Administrador")
-                    {
-                        query = "SELECT COUNT(*) FROM ADMIN WHERE Usuario = @usuario AND contrasena = @contrasena";
-                    }
-
-                    using (SqlCommand cmd = new SqlCommand(query, con))
-                    {
-                        cmd.Parameters.AddWithValue("@usuario", usuario);
-                        cmd.Parameters.AddWithValue("@contrasena", contrasena);
-
-                        // === LOGIN DE TRAINER ===
-                        if (rol == "Entrenador")
-                        {
-                            object result = cmd.ExecuteScalar();
-                            if (result != null && result != DBNull.Value)
-                            {
-                                int idTrainer = Convert.ToInt32(result);
-                                Session["Usuario"] = usuario;
-                                Session["Rol"] = rol;
-                                Session["idTrainer"] = idTrainer;
-
-                                Response.Redirect("../user/trainer.aspx");
-                                return;
-                            }
-                            else
-                            {
-                                lblMensaje.ForeColor = System.Drawing.Color.Red;
-                                lblMensaje.Text = "🚫 Tu cuenta aún no fue aprobada o las credenciales son incorrectas.";
-                                return;
-                            }
-                        }
-
-                        // === LOGIN DE TRAINEE ===
-                        if (rol == "Trainee")
-                        {
-                            object result = cmd.ExecuteScalar();
-                            if (result != null && result != DBNull.Value)
-                            {
-                                int idTrainee = Convert.ToInt32(result);
-                                Session["Usuario"] = usuario;
-                                Session["Rol"] = rol;
-                                Session["idTrainee"] = idTrainee;
-
-                                Response.Redirect("../user/trainee.aspx");
-                                return;
-                            }
-                            else
-                            {
-                                lblMensaje.ForeColor = System.Drawing.Color.Red;
-                                lblMensaje.Text = "❌ Usuario o contraseña incorrectos.";
-                                return;
-                            }
-                        }
-
-                        // === LOGIN DE ADMIN ===
-                        if (rol == "Administrador")
-                        {
-                            int count = Convert.ToInt32(cmd.ExecuteScalar());
-                            if (count > 0)
-                            {
-                                Session["Usuario"] = usuario;
-                                Session["Rol"] = rol;
-                                Response.Redirect("../user/admin.aspx");
-                                return;
-                            }
-                            else
-                            {
-                                lblMensaje.ForeColor = System.Drawing.Color.Red;
-                                lblMensaje.Text = "❌ Usuario o contraseña incorrectos.";
-                            }
-                        }
-                    }
+                    SesionHelper.CrearSesion(usuario, rol, resultado.IdUsuario);
+                    RedirigirSegunRol(rol);
+                }
+                else
+                {
+                    MostrarError(resultado.Mensaje);
                 }
             }
             catch (Exception ex)
             {
-                lblMensaje.ForeColor = System.Drawing.Color.Red;
-                lblMensaje.Text = "⚠️ Error de conexión: " + ex.Message;
+                MostrarError("⚠️ Error de conexión: " + ex.Message);
             }
+        }
+
+        private ResultadoLogin ValidarCredenciales(string usuario, string contrasena, string rol)
+        {
+            var resultado = new ResultadoLogin();
+
+            switch (rol)
+            {
+                case "Trainee":
+                    var idTrainee = usuarioDAO.ValidarTrainee(usuario, contrasena);
+                    if (idTrainee != null)
+                    {
+                        resultado.Exitoso = true;
+                        resultado.IdUsuario = idTrainee;
+                    }
+                    else
+                        resultado.Mensaje = "❌ Usuario o contraseña incorrectos.";
+                    break;
+
+                case "Entrenador":
+                    var idTrainer = usuarioDAO.ValidarTrainer(usuario, contrasena);
+                    if (idTrainer != null)
+                    {
+                        resultado.Exitoso = true;
+                        resultado.IdUsuario = idTrainer;
+                    }
+                    else
+                        resultado.Mensaje = "🚫 Tu cuenta aún no fue aprobada o las credenciales son incorrectas.";
+                    break;
+
+                case "Administrador":
+                    bool valido = usuarioDAO.ValidarAdmin(usuario, contrasena);
+                    resultado.Exitoso = valido;
+                    resultado.Mensaje = valido ? "" : "❌ Usuario o contraseña incorrectos.";
+                    break;
+            }
+
+            resultado.Rol = rol;
+            return resultado;
+        }
+
+        private void RedirigirSegunRol(string rol)
+        {
+            switch (rol)
+            {
+                case "Trainee": Response.Redirect("../user/trainee.aspx"); break;
+                case "Entrenador": Response.Redirect("../user/trainer.aspx"); break;
+                case "Administrador": Response.Redirect("../user/admin.aspx"); break;
+            }
+        }
+
+        private void MostrarError(string mensaje)
+        {
+            lblMensaje.ForeColor = System.Drawing.Color.Red;
+            lblMensaje.Text = mensaje;
         }
     }
 }
