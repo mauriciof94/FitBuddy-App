@@ -6,13 +6,143 @@
     <title>FitBuddy | Crear Ruta</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    
+   
     <style>
-        body { font-family: Arial; background: #f7f9fc; padding: 20px; }
-        form { background: white; padding: 20px; border-radius: 8px; max-width: 800px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        #map { height: 400px; border-radius: 10px; margin-bottom: 15px; }
-        .btn { padding: 10px 15px; background: #0078D7; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
-        .btn:hover { background: #005fa3; }
-        .btn-secondary { background: #888; margin-left: 5px; }
+        :root {
+            --bg-color: #000;
+            --second-bg-color: #111;
+            --text-color: #fff;
+            --main-color: #45ffca;
+            --gradient: linear-gradient(135deg, #45ffca 0%, #6effe0 100%);
+        }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-color);
+            padding: 20px; 
+            margin: 0;
+        }
+        
+        form { 
+            background: var(--second-bg-color); 
+            padding: 30px; 
+            border-radius: 15px; 
+            max-width: 800px; 
+            margin: 40px auto; 
+            border: 1px solid rgba(69, 255, 202, 0.2);
+            box-shadow: 0 10px 30px rgba(69, 255, 202, 0.15);
+        }
+        
+        h2 {
+            color: var(--main-color);
+            margin-bottom: 25px;
+            font-size: 28px;
+            text-align: center;
+        }
+        
+        #map { 
+            height: 400px; 
+            border-radius: 10px; 
+            margin-bottom: 20px; 
+            border: 2px solid var(--main-color);
+        }
+        
+        .btn { 
+            padding: 12px 25px; 
+            background: var(--gradient); 
+            color: #000; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(69, 255, 202, 0.4);
+        }
+        
+        .btn-secondary { 
+            background: transparent; 
+            color: var(--main-color);
+            border: 2px solid var(--main-color);
+            margin-left: 10px; 
+        }
+        
+        .btn-secondary:hover {
+            background: var(--main-color);
+            color: #000;
+        }
+        
+        /* Estilos para labels y inputs */
+        label {
+            display: block;
+            margin: 15px 0 8px;
+            color: #ccc;
+            font-size: 16px;
+        }
+        
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus, textarea:focus {
+            border-color: var(--main-color);
+            outline: none;
+            box-shadow: 0 0 10px rgba(69, 255, 202, 0.3);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        /* Checkbox estilo FitBuddy */
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--main-color);
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        /* Mensajes */
+        #lblMensaje {
+            display: block;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        /* Ajustes responsivos básicos */
+        @media (max-width: 768px) {
+            form {
+                padding: 20px;
+                margin: 20px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .btn-secondary {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -49,7 +179,7 @@
         map.on('click', function (e) {
             puntos.push([e.latlng.lat, e.latlng.lng]);
             if (polyline) map.removeLayer(polyline);
-            polyline = L.polyline(puntos, { color: 'blue' }).addTo(map);
+            polyline = L.polyline(puntos, { color: '#45ffca', weight: 3 }).addTo(map);
             document.getElementById('<%= hfPuntos.ClientID %>').value = JSON.stringify(puntos);
         });
     </script>
