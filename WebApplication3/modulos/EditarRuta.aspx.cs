@@ -16,14 +16,14 @@ namespace WebApplication3.modulos
         {
             if (!IsPostBack)
             {
-                // 🔹 Validar sesión activa
+                // 🔒 Validar sesión del entrenador
                 if (Session["idTrainer"] == null)
                 {
                     Response.Redirect("../auth/login.aspx");
                     return;
                 }
 
-                // 🔹 Cargar datos de la ruta si llega el ID por querystring
+                // 🔹 Verificar que venga el ID de la ruta
                 if (Request.QueryString["id"] != null)
                 {
                     int idRuta = Convert.ToInt32(Request.QueryString["id"]);
@@ -46,7 +46,10 @@ namespace WebApplication3.modulos
             {
                 txtNombre.Text = ruta.Nombre;
                 txtDescripcion.Text = ruta.Descripcion;
-                txtPuntos.Text = ruta.Puntos;
+
+                // ⬇️ AHORA cargamos el mapa desde el HiddenField
+                hfPuntos.Value = ruta.Puntos;
+
                 chkCompartida.Checked = ruta.Compartida;
             }
             else
@@ -57,27 +60,37 @@ namespace WebApplication3.modulos
 
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
-            int idTrainer = Convert.ToInt32(Session["idTrainer"]);
-            int idRuta = Convert.ToInt32(Request.QueryString["id"]);
-
-            Ruta r = new Ruta
+            try
             {
-                Id = idRuta,
-                Nombre = txtNombre.Text,
-                Descripcion = txtDescripcion.Text,
-                Puntos = txtPuntos.Text,
-                Compartida = chkCompartida.Checked,
-                IdTrainer = idTrainer
-            };
+                int idTrainer = Convert.ToInt32(Session["idTrainer"]);
+                int idRuta = Convert.ToInt32(Request.QueryString["id"]);
 
-            if (dao.EditarRuta(r))
-            {
-                ClientScript.RegisterStartupScript(this.GetType(), "alert",
-                    "alert('✅ Ruta actualizada correctamente.'); window.location='../user/trainer.aspx';", true);
+                Ruta r = new Ruta
+                {
+                    Id = idRuta,
+                    Nombre = txtNombre.Text.Trim(),
+                    Descripcion = txtDescripcion.Text.Trim(),
+
+                    // ⬇️ Guardamos los puntos desde el JSON actualizado del mapa
+                    Puntos = hfPuntos.Value,
+
+                    Compartida = chkCompartida.Checked,
+                    IdTrainer = idTrainer
+                };
+
+                if (dao.EditarRuta(r))
+                {
+                    ClientScript.RegisterStartupScript(this.GetType(), "alert",
+                        "alert('✅ Ruta actualizada correctamente.'); window.location='../user/trainer.aspx';", true);
+                }
+                else
+                {
+                    lblMensaje.Text = "❌ Error al actualizar la ruta.";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                lblMensaje.Text = "❌ Error al actualizar la ruta.";
+                lblMensaje.Text = "❌ Error inesperado: " + ex.Message;
             }
         }
 

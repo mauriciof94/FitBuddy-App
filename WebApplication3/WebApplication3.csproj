@@ -70,8 +70,10 @@
     <Content Include="auth\login.aspx" />
     <Content Include="auth\register.aspx" />
     <Content Include="css\auth.css" />
+    <Content Include="css\editar-ruta.css" />
     <Content Include="css\estilo.css" />
     <Content Include="css\users.css" />
+    <Content Include="JS\editar-ruta.js" />
     <Content Include="main\index.html" />
     <Content Include="main\sript.js" />
     <Content Include="modulos\Chat.aspx" />

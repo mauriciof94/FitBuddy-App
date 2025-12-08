@@ -1,0 +1,29 @@
+﻿/* ===============================
+   ESTILOS PARA EDITAR RUTA
+   =============================== */
+
+.map-editor {
+    height: 400px;
+    width: 100%;
+    border-radius: 1.5rem;
+    border: 2px solid rgba(69, 255, 202, 0.3);
+    box-shadow: 0 0 10px rgba(69, 255, 202, 0.2);
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.user-info label {
+    color: #ccc;
+    font-size: 1.6rem;
+    font-weight: 600;
+}
+
+.user-header h1 {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.btn-primary, .btn-secondary {
+    font-size: 1.6rem !important;
+}
